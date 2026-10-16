@@ -4,6 +4,20 @@
   become: true
   gather_facts: false
 
+  pre_tasks:
+  
+    - name: Precondition - stop the other webserver so port 80 is free
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: stopped
+        enabled: false
+      loop:
+        - "httpd"
+        - "lighttpd"
+        - "haproxy"
+      failed_when: false
+      tags: always
+      
   tasks:
 
     - name: Install nginx
