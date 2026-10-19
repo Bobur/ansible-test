@@ -1,0 +1,14 @@
+---
+# Settings for this lesson: the EEs are built locally, so they are never pulled.
+# Select the EE of a team with --eei localhost/team-a-ee:1.0 or localhost/team-b-ee:1.0
+
+ansible-navigator:
+  execution-environment:
+    enabled: true
+    image: localhost/team-b-ee:1.0
+    container-engine: podman
+    pull:
+      policy: never
+  mode: stdout
+  playbook-artifact:
+    enable: false

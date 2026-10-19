@@ -1,0 +1,28 @@
+---
+# Team A: still manages RHEL 8 hosts with Python 3.6, and its Playbooks were written
+# for community.general 8. ansible-core 2.17+ can no longer manage Python 3.6 targets.
+# Build in this directory:  ansible-builder build -t team-a-ee:1.0 -v 3
+
+version: 3
+
+images:
+  base_image:
+    name: registry.access.redhat.com/ubi9/ubi:9.6     # pinned, not :latest
+
+dependencies:
+  python_interpreter:
+    package_system: python3.12
+    python_path: /usr/bin/python3.12
+  ansible_core:
+    package_pip: ansible-core==2.16.*                  # last release line for Python 3.6 targets
+  ansible_runner:
+    package_pip: ansible-runner
+  galaxy:
+    collections:
+      - name: community.general
+        version: ">=8.0.0,<9.0.0"
+  system:
+    - openssh-clients [platform:rpm]
+
+options:
+  package_manager_path: /usr/bin/dnf

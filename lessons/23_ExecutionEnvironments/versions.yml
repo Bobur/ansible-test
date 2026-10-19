@@ -1,0 +1,29 @@
+---
+# What does this Ansible see? Run it in different places and compare:
+#   ansible-playbook versions.yml                                    (Control Node, as devops)
+#   sudo ansible-playbook versions.yml                               (Control Node, as root)
+#   ansible-navigator run versions.yml --eei localhost/team-a-ee:1.0 (EE of team A)
+#   ansible-navigator run versions.yml --eei localhost/team-b-ee:1.0 (EE of team B)
+
+- name: Which versions does this Ansible use?
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+  tasks:
+    - name: List every community.general collection this Ansible can see
+      ansible.builtin.command: ansible-galaxy collection list community.general
+      register: result_collections
+      changed_when: false
+      failed_when: false
+
+    - name: Show the versions
+      ansible.builtin.debug:
+        msg:
+          - "OS:            {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+          - "User:          {{ ansible_facts['user_id'] }}"
+          - "Python:        {{ ansible_facts['python_version'] }} ({{ ansible_playbook_python }})"
+          - "ansible-core:  {{ ansible_version['full'] }}"
+          - "Collections:   {{ result_collections.stdout_lines | select('search', '^community.general') | list }}"

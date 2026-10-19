@@ -1,0 +1,29 @@
+---
+# Team B: new Playbooks, current collections, uses the json_query filter (needs jmespath).
+# Build in this directory:  ansible-builder build -t team-b-ee:1.0 -v 3
+
+version: 3
+
+images:
+  base_image:
+    name: registry.access.redhat.com/ubi9/ubi:9.6     # same base as team A: shared, cached layers
+
+dependencies:
+  python_interpreter:
+    package_system: python3.12
+    python_path: /usr/bin/python3.12
+  ansible_core:
+    package_pip: ansible-core==2.18.*
+  ansible_runner:
+    package_pip: ansible-runner
+  galaxy:
+    collections:
+      - name: community.general
+        version: ">=10.0.0,<11.0.0"
+  python:
+    - jmespath
+  system:
+    - openssh-clients [platform:rpm]
+
+options:
+  package_manager_path: /usr/bin/dnf

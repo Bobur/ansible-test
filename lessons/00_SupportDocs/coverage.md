@@ -20,7 +20,7 @@ Use it to find where a topic is taught, and what to read on docs.ansible.com aft
 
 | docs.ansible.com guide | Core topics | Core coverage | All in-scope topics | Coverage |
 |---|---|---|---|---|
-| [Getting started](https://docs.ansible.com/ansible/latest/getting_started/index.html) | 2 | 100 % | 3 | `█████████░` 89 % |
+| [Getting started](https://docs.ansible.com/ansible/latest/getting_started/index.html) | 2 | 100 % | 3 | `██████████` 100 % |
 | [Installation, configuration](https://docs.ansible.com/ansible/latest/installation_guide/index.html) | 3 | 67 % | 3 | `███████░░░` 67 % |
 | [Building Ansible inventories](https://docs.ansible.com/ansible/latest/inventory_guide/index.html) | 5 | 73 % | 6 | `███████░░░` 67 % |
 | [Using Ansible command line tools](https://docs.ansible.com/ansible/latest/command_guide/index.html) | 3 | 78 % | 3 | `████████░░` 78 % |
@@ -47,7 +47,7 @@ The percentage is the average of the coverage marks (●●● = 100 %, ●●�
 |---|---|---|---|
 | Introduction to Ansible, Ansible concepts | ●●● | Core | [Intro](../README.md), [06](../06_Playbooks/README.md) |
 | Start automating, Building an inventory, Creating a playbook | ●●● | Core | [01](../01_InstallAndConfig/README.md), [04](../04_Inventory/README.md), [06](../06_Playbooks/README.md) |
-| Getting started with Execution Environments | ●●○ | Advanced | [22](../22_Navigator/README.md) (`ansible-navigator`, `ansible-builder`, on the lab VM) |
+| Getting started with Execution Environments | ●●● | Advanced | [23](../23_ExecutionEnvironments/README.md) (why, definition, build), [22](../22_Navigator/README.md) (`ansible-navigator`), on the lab VM |
 
 ### [Installation, configuration](https://docs.ansible.com/ansible/latest/installation_guide/index.html)
 

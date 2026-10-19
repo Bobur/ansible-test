@@ -370,6 +370,10 @@ EE, so the EE needs the collection **and** the Python library `jmespath` that th
         mode: "0644"
 ```
 
+> [!TIP]
+> Why EEs exist, all keys of the definition file, base images, company proxies and versioning are explained in
+> [23_ExecutionEnvironments](../23_ExecutionEnvironments/README.md).
+
 The minimal community EE has only `ansible-core`, so this Playbook fails there. We build an EE that has
 everything it needs. The definition is in the [ee](ee/) directory:
 

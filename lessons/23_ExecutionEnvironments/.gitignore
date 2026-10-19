@@ -1,0 +1,5 @@
+# ansible-builder build contexts
+*/context/
+# saved EE images (podman save)
+*.tar
+ansible-navigator.log
