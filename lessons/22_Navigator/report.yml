@@ -1,0 +1,44 @@
+---
+# A small report about the Managed Hosts.
+# The second Play needs on the CONTROL side (that is: inside the EE):
+#   - the community.general collection (json_query filter)
+#   - the jmespath Python library (used by json_query)
+
+- name: Collect facts from the Managed Hosts
+  hosts: myhosts
+  gather_facts: true
+
+  tasks:
+    - name: Show the OS and size of each host
+      ansible.builtin.debug:
+        msg: >-
+          {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }},
+          {{ ansible_facts['processor_vcpus'] }} vCPU, {{ ansible_facts['memtotal_mb'] }} MB
+
+- name: Summarize on the controller
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+  tasks:
+    - name: Build one record per host
+      ansible.builtin.set_fact:
+        host_records: "{{ host_records | default([]) + [record] }}"
+      loop: "{{ groups['myhosts'] }}"
+      vars:
+        record:
+          name: "{{ item }}"
+          os: "{{ hostvars[item]['ansible_facts']['distribution'] }}"
+          memory_mb: "{{ hostvars[item]['ansible_facts']['memtotal_mb'] }}"
+
+    - name: Names of the Fedora hosts (JMESPath query)
+      ansible.builtin.debug:
+        msg: "{{ host_records | community.general.json_query(\"[?os=='Fedora'].name\") }}"
+
+    - name: Save the report on localhost
+      ansible.builtin.copy:
+        content: "{{ host_records | to_nice_yaml }}"
+        dest: /tmp/lab-report.yml
+        mode: "0644"

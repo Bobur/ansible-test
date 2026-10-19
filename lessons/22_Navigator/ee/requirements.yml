@@ -1,0 +1,7 @@
+---
+# Collections baked into the EE. Pin versions in real projects, e.g.:
+#   - name: community.general
+#     version: ">=10.0.0,<11.0.0"
+collections:
+  - name: community.general
+  - name: ansible.posix

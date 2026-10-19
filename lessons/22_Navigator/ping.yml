@@ -1,0 +1,20 @@
+---
+# Reach the Managed Hosts from inside an Execution Environment.
+# Needs the ssh key of your user on the lab VM (ssh-agent), see the README.
+
+- name: Reach the Managed Hosts
+  hosts: myhosts
+  gather_facts: false
+
+  tasks:
+    - name: Ping the host (ssh login and Python check)
+      ansible.builtin.ping:
+
+    - name: Ask the host for its name
+      ansible.builtin.command: hostname
+      register: result_hostname
+      changed_when: false
+
+    - name: Show which host answered
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} (port {{ ansible_port }}) says: {{ result_hostname.stdout }}"

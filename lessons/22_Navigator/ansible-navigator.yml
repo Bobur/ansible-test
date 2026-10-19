@@ -1,0 +1,24 @@
+---
+# Project settings of ansible-navigator. They are used because the file is in the
+# current directory. Command line options override them, e.g.:
+#   --ee false                 run without an Execution Environment
+#   -m interactive             use the text user interface instead of stdout
+#   --eei localhost/lab-ee:1.0 use another EE image
+# Show the settings in effect: ansible-navigator settings --effective
+
+ansible-navigator:
+  execution-environment:
+    enabled: true
+    image: ghcr.io/ansible-community/community-ee-minimal:latest
+    container-engine: podman
+    pull:
+      policy: missing          # always | missing | never | tag
+    container-options:
+      - "--net=host"           # the EE uses the network of the lab VM: 127.0.0.1:2021 is host1
+  mode: stdout
+  playbook-artifact:
+    enable: true
+    save-as: "{playbook_dir}/artifacts/{playbook_name}-artifact-{time_stamp}.json"
+  logging:
+    level: warning
+    file: ./ansible-navigator.log

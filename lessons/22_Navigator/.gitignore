@@ -1,0 +1,5 @@
+# ansible-navigator run artifacts and log
+artifacts/
+ansible-navigator.log
+# ansible-builder build context
+ee/context/

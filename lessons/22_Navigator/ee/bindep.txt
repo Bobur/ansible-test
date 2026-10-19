@@ -1,0 +1,3 @@
+# RPM packages for the EE (bindep format)
+# ssh client: without it the EE cannot connect to any Managed Host
+openssh-clients [platform:rpm]

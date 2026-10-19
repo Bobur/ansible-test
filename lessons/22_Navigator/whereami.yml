@@ -1,0 +1,30 @@
+---
+# Where does a Playbook run? Run it without and with an Execution Environment:
+#   ansible-navigator run whereami.yml --ee false
+#   ansible-navigator run whereami.yml
+
+- name: Where does the Playbook run?
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    # localhost uses the Python that runs ansible-playbook itself
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+  tasks:
+    - name: Show who and where localhost is
+      ansible.builtin.debug:
+        msg:
+          - "Hostname:      {{ ansible_facts['hostname'] }}"
+          - "OS:            {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+          - "User:          {{ ansible_facts['user_id'] }}"
+          - "Python:        {{ ansible_facts['python_version'] }}"
+          - "ansible-core:  {{ ansible_version['full'] }}"
+          - "In container:  {{ ansible_facts['env']['container'] | default('no') }}"
+          - "Project dir:   {{ playbook_dir }}"
+
+    - name: Leave a file behind on localhost
+      ansible.builtin.copy:
+        content: "Written by whereami.yml on {{ ansible_facts['hostname'] }}\n"
+        dest: /tmp/whereami.txt
+        mode: "0644"

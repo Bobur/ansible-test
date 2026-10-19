@@ -20,7 +20,7 @@ Use it to find where a topic is taught, and what to read on docs.ansible.com aft
 
 | docs.ansible.com guide | Core topics | Core coverage | All in-scope topics | Coverage |
 |---|---|---|---|---|
-| [Getting started](https://docs.ansible.com/ansible/latest/getting_started/index.html) | 2 | 100 % | 3 | `███████░░░` 67 % |
+| [Getting started](https://docs.ansible.com/ansible/latest/getting_started/index.html) | 2 | 100 % | 3 | `█████████░` 89 % |
 | [Installation, configuration](https://docs.ansible.com/ansible/latest/installation_guide/index.html) | 3 | 67 % | 3 | `███████░░░` 67 % |
 | [Building Ansible inventories](https://docs.ansible.com/ansible/latest/inventory_guide/index.html) | 5 | 73 % | 6 | `███████░░░` 67 % |
 | [Using Ansible command line tools](https://docs.ansible.com/ansible/latest/command_guide/index.html) | 3 | 78 % | 3 | `████████░░` 78 % |
@@ -35,7 +35,7 @@ Use it to find where a topic is taught, and what to read on docs.ansible.com aft
 | [Ansible tips and tricks](https://docs.ansible.com/ansible/latest/tips_tricks/index.html) | 2 | 83 % | 2 | `████████░░` 83 % |
 | [Reference & appendices](https://docs.ansible.com/ansible/latest/reference_appendices/playbooks_keywords.html) | 9 | 67 % | 11 | `██████░░░░` 61 % |
 | [Other guides](https://docs.ansible.com/ansible/latest/index.html) | 0 | – | 2 | `███████░░░` 67 % |
-| **Total** | **55** | **78 %** | **75** | **66 %** |
+| **Total** | **55** | **78 %** | **75** | **67 %** |
 
 The percentage is the average of the coverage marks (●●● = 100 %, ●●○ = 67 %, ●○○ = 33 %, ○○○ = 0 %).
 
@@ -47,7 +47,7 @@ The percentage is the average of the coverage marks (●●● = 100 %, ●●�
 |---|---|---|---|
 | Introduction to Ansible, Ansible concepts | ●●● | Core | [Intro](../README.md), [06](../06_Playbooks/README.md) |
 | Start automating, Building an inventory, Creating a playbook | ●●● | Core | [01](../01_InstallAndConfig/README.md), [04](../04_Inventory/README.md), [06](../06_Playbooks/README.md) |
-| Getting started with Execution Environments | ○○○ | Advanced | — |
+| Getting started with Execution Environments | ●●○ | Advanced | [22](../22_Navigator/README.md) (`ansible-navigator`, `ansible-builder`, on the lab VM) |
 
 ### [Installation, configuration](https://docs.ansible.com/ansible/latest/installation_guide/index.html)
 
@@ -208,5 +208,5 @@ Core topics that are only mentioned (●○○) or not covered — candidates to
 - **Interpreter discovery** (Reference & appendices) — currently ●○○: interpreter_python in every ansible.cfg, [05](../05_Configuration/README.md)
 - **Glossary, FAQ** (Reference & appendices) — currently ●○○: [Intro](../README.md) (concepts table)
 
-Advanced topics that are natural next steps after the bootcamp: Execution Environments and `ansible-navigator`,
-dynamic inventory plugins, `async`/`poll`, the task debugger, Play argument validation, writing custom modules.
+Advanced topics that are natural next steps after the bootcamp: Ansible Automation Platform (prepared by
+[22](../22_Navigator/README.md), Execution Environments), dynamic inventory plugins, `async`/`poll`, the task debugger, Play argument validation, writing custom modules.

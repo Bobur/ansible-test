@@ -1,0 +1,12 @@
+# The Managed Host containers, reached through the ssh ports that labenv/run.sh
+# publishes on the lab VM:  host1 -> 2021, host2 -> 2022, host3 -> 2023
+# 127.0.0.1 works without an EE, and inside an EE started with --net=host
+# (see ansible-navigator.yml)
+
+[myhosts]
+host1 ansible_port=2021
+host2 ansible_port=2022
+host3 ansible_port=2023
+
+[myhosts:vars]
+ansible_host=127.0.0.1

@@ -1,0 +1,27 @@
+---
+# Definition of our own Execution Environment. Build it in this directory with:
+#   ansible-builder build -t lab-ee:1.0 -v 3
+# The image appears as localhost/lab-ee:1.0 in "podman images".
+
+version: 3
+
+images:
+  base_image:
+    # UBI 9: the freely redistributable RHEL 9 userspace. The Red Hat supported EEs
+    # of Ansible Automation Platform are built on it as well.
+    name: registry.access.redhat.com/ubi9/ubi:latest
+
+dependencies:
+  python_interpreter:
+    package_system: python3.12
+    python_path: /usr/bin/python3.12
+  ansible_core:
+    package_pip: ansible-core==2.18.*    # the same ansible-core as the lab Control Node
+  ansible_runner:
+    package_pip: ansible-runner
+  galaxy: requirements.yml               # collections
+  python: requirements.txt               # Python libraries
+  system: bindep.txt                     # RPM packages
+
+options:
+  package_manager_path: /usr/bin/dnf

@@ -1,0 +1,3 @@
+# Python libraries for the EE (pip format)
+# json_query of community.general needs jmespath, the collection does not install it itself
+jmespath
