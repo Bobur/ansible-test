@@ -4,14 +4,18 @@
 #   22_Navigator, 23_ExecutionEnvironments (and later lessons, see "Adding a lesson" below)
 #
 # Run it on the lab VM (where labenv/run.sh started the lab containers), as the user who
-# does the lessons, with the navigator venv available (~/navigator is activated automatically):
+# does the lessons:
 #
 #   ./test_lessons.sh                 # all lessons
 #   ./test_lessons.sh 23              # only lesson 23
 #   ./test_lessons.sh --no-build      # skip EE builds, test only the images that already exist
 #   ./test_lessons.sh --rebuild 22    # rebuild the EE images of lesson 22 even if they exist
+#   ./test_lessons.sh --reinstall     # recreate the navigator venv with the latest pip packages
+#   ./test_lessons.sh --no-install    # don't create the venv, use ansible-navigator from the PATH
 #
-# Missing EE images are built (this takes several minutes per image on the first run).
+# ansible-navigator and ansible-builder are installed with pip into the venv ~/navigator
+# (as in 22_Navigator), with the newest Python >= 3.10 found. Set NAVIGATOR_VENV to use
+# another directory. Missing EE images are built (several minutes per image on the first run).
 # Every command's output is kept in a log directory, printed at the end.
 # Exit code: the number of failed tests (0 = all passed).
 #
@@ -21,17 +25,22 @@
 ALL_LESSONS=(22 23)
 
 usage() {
-	sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'
 	exit "${1:-0}"
 }
 
 REBUILD=false
 BUILD=true
+INSTALL=true
+REINSTALL=false
+VENV=${NAVIGATOR_VENV:-$HOME/navigator}
 SELECTED=()
 for arg in "$@"; do
 	case $arg in
 		--rebuild)  REBUILD=true ;;
 		--no-build) BUILD=false ;;
+		--no-install) INSTALL=false ;;
+		--reinstall) REINSTALL=true ;;
 		-h|--help)  usage ;;
 		[0-9][0-9]) SELECTED+=("$arg") ;;
 		*)          echo "Unknown argument: $arg"; usage 1 ;;
@@ -46,12 +55,6 @@ LOGDIR=$(mktemp -d /tmp/test_lessons.XXXXXX)
 
 # The lab containers (ansible, host1..3) are rootful: reach them with sudo if not root
 if [ "$(id -u)" -eq 0 ]; then LABPODMAN=(podman); else LABPODMAN=(sudo -n podman); fi
-
-# ansible-navigator from the venv of the lesson, if it is not on the PATH yet
-if ! command -v ansible-navigator >/dev/null 2>&1 && [ -f ~/navigator/bin/activate ]; then
-	# shellcheck disable=SC1090
-	source ~/navigator/bin/activate
-fi
 
 if [ -t 1 ]; then
 	G=$'\e[32m'; R=$'\e[31m'; Y=$'\e[33m'; B=$'\e[1m'; N=$'\e[0m'
@@ -130,6 +133,60 @@ build_ee() {
 			"read the log; base image / PyPI / galaxy reachable through the proxy?" \
 			bash -c "cd '$dir' && ansible-builder build -t '$tag' -v 2"
 	fi
+}
+
+#################################################################
+# ansible-navigator and ansible-builder with pip, in a venv
+#################################################################
+
+# find_python: print the newest python3.x >= 3.10 on the PATH
+find_python() {
+	local py
+	for py in python3.13 python3.12 python3.11 python3.10 python3; do
+		if command -v "$py" >/dev/null 2>&1 &&
+		   "$py" -c 'import sys; sys.exit(sys.version_info < (3, 10))' 2>/dev/null; then
+			echo "$py"
+			return 0
+		fi
+	done
+	return 1
+}
+
+test_install() {
+	section "ansible-navigator and ansible-builder (pip, venv $VENV)"
+
+	if ! $INSTALL; then
+		pass "--no-install: using ansible-navigator from the PATH"
+		return 0
+	fi
+
+	if [ -x "$VENV/bin/ansible-navigator" ] && ! $REINSTALL; then
+		# shellcheck disable=SC1091
+		source "$VENV/bin/activate"
+		pass "venv present, activated (use --reinstall to recreate it)"
+		return 0
+	fi
+
+	local py
+	if ! py=$(find_python); then
+		fail "no Python >= 3.10 found" \
+			"RHEL 9: sudo dnf install python3.12 ; RHEL 8.8+: sudo dnf install python3.11"
+		return 1
+	fi
+	pass "Python for the venv: $py ($("$py" --version 2>&1))"
+
+	if $REINSTALL && [ -d "$VENV" ]; then
+		rm -rf "$VENV"
+	fi
+	check "create venv $VENV" "is the python venv module installed?" "$py" -m venv "$VENV" || return 1
+	# shellcheck disable=SC1091
+	source "$VENV/bin/activate"
+	check "upgrade pip in the venv" "PyPI reachable? proxy set (HTTPS_PROXY)?" \
+		python -m pip install --upgrade pip || return 1
+	printf "  ....  pip install ansible-navigator ansible-builder, this takes a minute\n"
+	check "pip install ansible-navigator ansible-builder" "PyPI reachable? proxy set (HTTPS_PROXY)?" \
+		python -m pip install --upgrade ansible-navigator ansible-builder || return 1
+	return 0
 }
 
 #################################################################
@@ -304,7 +361,7 @@ test_23() {
 
 printf "${B}Lesson tests:${N} %s   (logs: %s)\n" "${SELECTED[*]}" "$LOGDIR"
 
-if test_prereq; then
+if test_install && test_prereq; then
 	for lesson in "${SELECTED[@]}"; do
 		if declare -F "test_$lesson" >/dev/null; then
 			"test_$lesson"
