@@ -403,6 +403,12 @@ On the lab VM, in `~/ansible/lessons/23_ExecutionEnvironments`, with the navigat
    ```
    Compare with Exercise 1: how many `community.general` versions does each EE see? Did anything get installed on
    the lab VM itself?
+
+   > [!NOTE]
+   > If navigator says `image was not found locally`: the option is `--eei` with **two** dashes, and the image name
+   > needs the `localhost/` prefix. A mistyped option is ignored, and the default image of `ansible-navigator.yml`
+   > (`localhost/team-b-ee:1.0`) is used instead. Also check `podman images` as the **same user** who runs
+   > navigator: rootless Podman keeps a separate image store for every user, and root has its own.
 1. Team B wants `ansible.posix` as well. Add it to `team-b-ee/execution-environment.yml`, build `team-b-ee:1.1`,
    and check that `team-b-ee:1.0` still exists, unchanged. Which stages were rebuilt?
 1. Replace the `9.6` tag of the base image with `latest` in one of the definitions. Why is this a bad idea for

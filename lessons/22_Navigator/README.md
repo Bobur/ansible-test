@@ -282,8 +282,8 @@ ssh-add -l
     - name: Ping the host (ssh login and Python check)
       ansible.builtin.ping:
 
-    - name: Ask the host for its name
-      ansible.builtin.command: hostname
+    - name: Ask the host for its name (uname works for any user)
+      ansible.builtin.command: uname -n
       register: result_hostname
       changed_when: false
 
