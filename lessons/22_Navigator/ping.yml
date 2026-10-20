@@ -10,8 +10,14 @@
     - name: Ping the host (ssh login and Python check)
       ansible.builtin.ping:
 
-    - name: Ask the host for its name (uname works for any user)
-      ansible.builtin.command: uname -n
+    - name: Install the hostname command
+      ansible.builtin.dnf:
+        name: hostname
+        state: present
+      become: true
+
+    - name: Ask the host for its name
+      ansible.builtin.command: hostname
       register: result_hostname
       changed_when: false
 
