@@ -14,8 +14,9 @@
 #   ./test_lessons.sh --no-install    # don't create the venv, use ansible-navigator from the PATH
 #
 # ansible-navigator and ansible-builder are installed with pip into the venv ~/navigator
-# (as in 22_Navigator), with the newest Python >= 3.10 found. Set NAVIGATOR_VENV to use
-# another directory. Missing EE images are built (several minutes per image on the first run).
+# (as in 22_Navigator), with the newest Python found: 3.10+ preferred, 3.9 gets older releases.
+# Set NAVIGATOR_VENV to use another directory.
+# Missing EE images are built (several minutes per image on the first run).
 # Every command's output is kept in a log directory, printed at the end.
 # Exit code: the number of failed tests (0 = all passed).
 #
@@ -139,12 +140,12 @@ build_ee() {
 # ansible-navigator and ansible-builder with pip, in a venv
 #################################################################
 
-# find_python: print the newest python3.x >= 3.10 on the PATH
+# find_python MINOR: print the newest python3.x on the PATH with x >= MINOR
 find_python() {
 	local py
-	for py in python3.13 python3.12 python3.11 python3.10 python3; do
+	for py in python3.13 python3.12 python3.11 python3.10 python3.9 python3; do
 		if command -v "$py" >/dev/null 2>&1 &&
-		   "$py" -c 'import sys; sys.exit(sys.version_info < (3, 10))' 2>/dev/null; then
+		   "$py" -c "import sys; sys.exit(sys.version_info < (3, $1))" 2>/dev/null; then
 			echo "$py"
 			return 0
 		fi
@@ -168,12 +169,15 @@ test_install() {
 	fi
 
 	local py
-	if ! py=$(find_python); then
-		fail "no Python >= 3.10 found" \
-			"RHEL 9: sudo dnf install python3.12 ; RHEL 8.8+: sudo dnf install python3.11"
+	if py=$(find_python 10); then
+		pass "Python for the venv: $py ($("$py" --version 2>&1))"
+	elif py=$(find_python 9); then
+		warn "only $py ($("$py" --version 2>&1)): pip installs an older ansible-navigator (current needs 3.10+)"
+	else
+		fail "no Python >= 3.9 found" \
+			"RHEL 9: sudo dnf install python3.12 ; RHEL 8: sudo dnf install python3.11 (8.8+) or python39"
 		return 1
 	fi
-	pass "Python for the venv: $py ($("$py" --version 2>&1))"
 
 	if $REINSTALL && [ -d "$VENV" ]; then
 		rm -rf "$VENV"
